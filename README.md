@@ -1,1 +1,1 @@
-Tinifier 2.0
+Umbraco Tinifier 2.0
