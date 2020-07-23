@@ -1,0 +1,46 @@
+﻿<div ng-controller="Tinifier.TinifyAll.Controller as vm">
+
+    <umb-editor-view>
+
+        <umb-editor-header name="model.title"
+                           name-locked="true"
+                           hide-alias="true"
+                           hide-icon="false"
+                           hide-description="true">
+        </umb-editor-header>
+
+        <umb-editor-container>
+            <umb-box>
+                <umb-box-content>
+                    <h4>All images on the site will be compressed.</h4>
+                    <p>It could be time-consuming operation and could affect your server in case of thousands of images.</p>
+                    <p><span style="color:darkgreen">Do you wish to continue?</span></p>
+                </umb-box-content>
+            </umb-box>
+
+        </umb-editor-container>
+
+        <umb-editor-footer>
+            <umb-editor-footer-content-right>
+                <umb-button type="button"
+                            button-style="link"
+                            label-key="general_close"
+                            shortcut="esc"
+                            action="vm.close()">
+                </umb-button>
+                <umb-button type="button"
+                            button-style="action"
+                            label-key="general_submit"
+                            action="vm.submit(model)">
+                </umb-button>
+            </umb-editor-footer-content-right>
+
+        </umb-editor-footer>
+
+    </umb-editor-view>
+
+
+</div>
+
+
+

@@ -1,0 +1,37 @@
+﻿{
+  "sections": [
+    {
+      "alias": "tinifier",
+      "name": "Tinifier"
+    }
+  ],
+  "dashboards": [
+    {
+      "alias": "settings",
+      "view": "/App_Plugins/Tinifier/Backoffice/Dashboards/Settings.html",
+      "sections": [ "tinifier" ],
+      "weight": 10
+    },
+    {
+      "alias": "statistic",
+      "view": "/App_Plugins/Tinifier/Backoffice/Dashboards/TinifierStatistic.html",
+      "sections": [ "tinifier" ],
+      "weight": 10
+    }
+  ],
+  "javascript": [
+    "https://www.gstatic.com/charts/loader.js",
+    "~/App_Plugins/Tinifier/Controllers/TinifierEditTSetting.controller.js",
+    "~/App_Plugins/Tinifier/Controllers/TinifierEditTimage.controller.js",
+    "~/App_Plugins/Tinifier/Controllers/TinyTImage.controller.js",
+    "~/App_Plugins/Tinifier/Controllers/TinifierDisplayStatistic.controller.js",
+    "~/App_Plugins/Tinifier/Controllers/TinifierOrganizeImages.controller.js",
+    "~/App_Plugins/Tinifier/Controllers/Test.controller.js",
+    "~/App_Plugins/Tinifier/Controllers/TinifyAll.controller.js",
+    "~/App_Plugins/Tinifier/Controllers/StopTinifyingConfirmation.controller.js"
+    //"~/App_Plugins/Tinifier/Resources/TinifierApiUrls.resource.js"
+  ],
+  "css": [
+    "~/App_Plugins/Tinifier/css/TinifierStyle.css"
+  ]
+}
