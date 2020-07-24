@@ -39,20 +39,25 @@ namespace Tinifier.Core.Application
 
             public void Initialize()
             {
-                Upgrader upgrader = new Upgrader(new MyMigrationPlan());
+                var migrationPlan = new MigrationPlan("TinifierMigrations");
+
+                migrationPlan.From(string.Empty)
+                    .To<MigrationCreateTables>("tinifier-migration2");
+
+                Upgrader upgrader = new Upgrader(migrationPlan);
                 upgrader.Execute(scopeProvider, migrationBuilder, keyValueService, logger);
             }
 
             public void Terminate() { }
 
-            public class MyMigrationPlan : MigrationPlan
+          /*  public class MyMigrationPlan : MigrationPlan
             {
                 public MyMigrationPlan() : base(PackageConstants.SectionName)
                 {
-                    var res = From(string.Empty)
+                    From(string.Empty)
                          .To<MigrationCreateTables>("tinifier-migration");
                 }
-            }
+            }*/
 
             public class MigrationCreateTables : MigrationBase
             {
