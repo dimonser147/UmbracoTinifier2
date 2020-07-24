@@ -1,4 +1,5 @@
-﻿using NPoco;
+﻿using System;
+using NPoco;
 using Tinifier.Core.Models.Db;
 using Umbraco.Core;
 using Umbraco.Core.Persistence;
@@ -32,11 +33,21 @@ namespace Tinifier.Core.Repository.FileSystemProvider
 
         public TFileSystemProviderSettings GetFileSystem()
         {
-            using (IScope scope = _scopeProvider.CreateScope())
+            try
             {
-                var database = scope.Database;
-                var query = new Sql("SELECT * FROM TinifierFileSystemProviderSettings");
-                return database.FirstOrDefault<TFileSystemProviderSettings>(query);
+                using (IScope scope = _scopeProvider.CreateScope())
+                {
+                    var database = scope.Database;
+                    var query = new Sql("SELECT * FROM TinifierFileSystemProviderSettings");
+                    return database.FirstOrDefault<TFileSystemProviderSettings>(query);
+                }
+            }
+            catch (Exception e)
+            {
+                return new TFileSystemProviderSettings
+                {
+                    Type = "PhysicalFileSystem"
+                };
             }
         }
 
