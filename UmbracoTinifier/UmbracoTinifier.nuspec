@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <!-- Required elements-->
+    <id>Tinifier</id>
+    <version>2.0.2</version>
+    <description>The official and free Umbraco TinyPNG package for image compressing and minifying.</description>
+    <authors>Backend Devs</authors>
+    <dependencies>      
+	  <group targetFramework="net471" >
+		<dependency id="UmbracoFileSystemProviders.Azure" version="2.0.0" />
+	  </group>
+    </dependencies>
+    <!-- Optional elements -->
+    <!-- ... -->
+  </metadata>
+
+  <files>
+    <file src="bin\Tinifier.Core.dll" target="lib\net471"/>
+    <file src="App_Plugins\Tinifier\**" target="content\App_Plugins\Tinifier\"/>
+  </files>
+
+</package>
