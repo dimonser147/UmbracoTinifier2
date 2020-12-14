@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using Umbraco.Core.Composing;
 using Umbraco.Core.Models;
 using Umbraco.Web;
 
@@ -48,11 +49,9 @@ namespace Tinifier.Core.Infrastructure
         /// <returns></returns>
         public static string GetAbsoluteUrl(Media uMedia)
         {
-            var url = uMedia.GetUrl("Image", null);
-            UmbracoHelper umbHelper = Umbraco.Web.Composing.Current.UmbracoHelper;
-            var content = umbHelper.Media(uMedia.Id);
-            var imagerUrl = content?.Url;
-            return imagerUrl;
+            var url = uMedia.GetUrl("umbracoFile", Current.Logger);
+
+            return url;
         }
     }
 }
