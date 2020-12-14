@@ -1,5 +1,6 @@
 ﻿using NPoco;
 using NPoco.fastJSON;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,11 +39,19 @@ namespace Tinifier.Core.Repository.Common
                 if (serializedRootObject != null)
                 {
                     RootObject rootObject = JSON.ToObject<RootObject>(serializedRootObject);
-                    var umbracoFile = rootObject.properties.umbracoFile.FirstOrDefault();
-                    if (umbracoFile != null)
+                    //If properties == null, we run into problems. Better to process what we can and ignore "corrupt" media items
+                    if (rootObject?.properties?.umbracoFile != null)
                     {
-                        Val valModel = JSON.ToObject<Val>(umbracoFile.val);
-                        return valModel.src;
+                        var umbracoFile = rootObject.properties.umbracoFile.FirstOrDefault();
+                        if (umbracoFile != null)
+                        {
+                            Val valModel = JSON.ToObject<Val>(umbracoFile.val);
+                            return valModel.src;
+                        }
+                    }
+                    else
+                    {
+                        Log.Error($"Tinifier - Error finding rootObject for id {id}");
                     }
                 }
             }

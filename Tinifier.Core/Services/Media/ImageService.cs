@@ -77,7 +77,9 @@ namespace Tinifier.Core.Services.Media
 
         public IEnumerable<TImage> Convert(IEnumerable<uModels.Media> items)
         {
-            return items.Select(x => Convert(x));
+            return items
+                .Select(x => Convert(x))
+                .Where(x => !string.IsNullOrEmpty(x.AbsoluteUrl)); //Skip images for which we were unable to fetch the Url
         }
 
         public TImage Convert(uModels.Media uMedia)
