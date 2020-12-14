@@ -23,6 +23,8 @@ using NPoco;
 using Umbraco.Core.Models.PublishedContent;
 using System.Web;
 using Tinifier.Core.Repository.FileSystemProvider;
+using Tinifier.Core.Services.BlobStorage;
+using Tinifier.Core.Services.Statistic;
 
 namespace Tinifier.Core.Repository.Image
 {
@@ -32,6 +34,7 @@ namespace Tinifier.Core.Repository.Image
         IMediaTypeService _mediaTypeService;
         IFileSystemProviderRepository _fileSystemProviderRepository;
         private readonly IMediaService _mediaService;
+        private readonly IBlobStorage _blobStorage;
 
         public TImageRepository(IScopeProvider scopeProvider, IMediaService mediaService,
             IMediaTypeService mediaTypeService, IFileSystemProviderRepository fileSystemProviderRepository)
@@ -40,6 +43,7 @@ namespace Tinifier.Core.Repository.Image
             this._mediaService = mediaService;
             _mediaTypeService = mediaTypeService;
             _fileSystemProviderRepository = fileSystemProviderRepository;
+            _blobStorage = new AzureBlobStorageService();
         }
 
         /// <summary>
@@ -180,24 +184,27 @@ namespace Tinifier.Core.Repository.Image
         /// Get Count of Images
         /// </summary>
         /// <returns>Number of Images</returns>
-        public int AmounthOfItems()
+        public int AmountOfItems()
         {
             var numberOfImages = 0;
             var fileSystem = _fileSystemProviderRepository.GetFileSystem();
 
             if (fileSystem != null)
             {
-                // if (fileSystem.Type.Contains("PhysicalFileSystem"))
-                // {
-                numberOfImages = Directory.EnumerateFiles(HostingEnvironment.MapPath("/media/"), "*.*", SearchOption.AllDirectories)
-                    .Count(file => !file.ToLower().EndsWith("config"));
-                //}
-                // else
-                // {
-                //    //_blobStorage.SetDataForBlobStorage();
-                //    //if (_blobStorage.DoesContainerExist())
-                //    //    numberOfImages = _blobStorage.CountBlobsInContainer();
-                // }        
+                if (fileSystem.Type.Contains("PhysicalFileSystem"))
+                {
+                    numberOfImages = Directory
+                        .EnumerateFiles(HostingEnvironment.MapPath("/media/"), "*.*", SearchOption.AllDirectories)
+                        .Count(file => !file.ToLower().EndsWith("config"));
+                }
+                else
+                {                    
+                    _blobStorage.SetDataForBlobStorage();
+                    if (_blobStorage.DoesContainerExist())
+                    {
+                        numberOfImages = _blobStorage.CountBlobsInContainer();
+                    }
+                }        
             }
 
             return numberOfImages;
@@ -207,7 +214,7 @@ namespace Tinifier.Core.Repository.Image
         /// Get Count of Optimized Images
         /// </summary>
         /// <returns>Number of optimized Images</returns>
-        public int AmounthOfOptimizedItems()
+        public int AmountOfOptimizedItems()
         {
             using (IScope scope = scopeProvider.CreateScope())
             {

@@ -27,9 +27,9 @@ namespace Tinifier.Core.Repository.Image
 
         IEnumerable<Media> GetItemsFromFolder(int folderId);
 
-        int AmounthOfItems();
+        int AmountOfItems();
 
-        int AmounthOfOptimizedItems();
+        int AmountOfOptimizedItems();
 
         Media Get(string path);
     }

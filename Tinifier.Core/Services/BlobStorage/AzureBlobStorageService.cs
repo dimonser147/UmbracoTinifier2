@@ -1,5 +1,5 @@
-﻿using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Blob;
+﻿using Microsoft.Azure.Storage;
+using Microsoft.Azure.Storage.Blob;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -16,27 +16,32 @@ namespace Tinifier.Core.Services.BlobStorage
 
         public void SetDataForBlobStorage()
         {
-            var path = HostingEnvironment.MapPath("~/Web.config");
-            var doc = new XmlDocument();
-            doc.Load(path);
-            var node = doc.SelectSingleNode("appSettings");
-
-            if (node != null)
+            if (_blobContainer == null)
             {
-                var keysNodes = node.LastChild.SelectNodes("add");
-                var dictionary = new Dictionary<string, string>();
+                var path = HostingEnvironment.MapPath("~/Web.config");
+                var doc = new XmlDocument();
+                doc.Load(path);
+                var node = doc.SelectSingleNode("//appSettings");
 
-                foreach (XmlNode xmlNode in keysNodes)
-                    dictionary.Add(xmlNode.Attributes.GetNamedItem("key").Value,
-                        xmlNode.Attributes.GetNamedItem("value").Value);
+                if (node != null)
+                {
+                    var keysNodes = node.SelectNodes("add");
+                    var dictionary = new Dictionary<string, string>();
 
-                var connectionString = dictionary.First(x => x.Key == "connectionString").Value;
-                var containerName = dictionary.First(x => x.Key == "containerName").Value;
+                    foreach (XmlNode xmlNode in keysNodes)
+                    {
+                        dictionary.Add(xmlNode.Attributes.GetNamedItem("key").Value,
+                            xmlNode.Attributes.GetNamedItem("value").Value);
+                    }
 
-                var storageAccount = CloudStorageAccount.Parse(connectionString);
-                _blobClient = storageAccount.CreateCloudBlobClient();
-                _containerName = containerName;
-                _blobContainer = _blobClient.GetContainerReference(containerName);
+                    var connectionString = dictionary.First(x => x.Key == "AzureBlobFileSystem.ConnectionString:media").Value;
+                    var containerName = dictionary.First(x => x.Key == "AzureBlobFileSystem.ContainerName:media").Value;
+
+                    var storageAccount = CloudStorageAccount.Parse(connectionString);
+                    _blobClient = storageAccount.CreateCloudBlobClient();
+                    _containerName = containerName;
+                    _blobContainer = _blobClient.GetContainerReference(containerName);
+                }
             }
         }
 

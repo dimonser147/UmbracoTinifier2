@@ -282,6 +282,11 @@ namespace Tinifier.Core.Controllers
             var n = imagesList.Count();
             var k = n - nonOptimizedImagesCount;
 
+            if (n > 0)
+            {
+                _imageService.UpdateStatistics();
+            }
+
             return GetSuccessResponse(k, n,
                 nonOptimizedImagesCount == 0 ? EventMessageType.Success : EventMessageType.Warning);
         }

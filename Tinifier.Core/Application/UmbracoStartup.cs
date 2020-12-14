@@ -147,7 +147,10 @@ namespace Tinifier.Core.Application
             MediaSavingHelper.IsSavingInProgress = true;
             // reupload image issue https://goo.gl/ad8pTs
             HandleMedia(e.SavedEntities,
-                    (m) => _historyService.Delete(m.Id.ToString()),
+                    (m) => {
+                        _historyService.Delete(m.Id.ToString());
+                        return false;
+                    },
                     (m) => m.IsPropertyDirty(PackageConstants.UmbracoFileAlias));
         }
 
@@ -165,13 +168,16 @@ namespace Tinifier.Core.Application
                     try
                     {
                         OptimizeOnUploadAsync(m.Id, e).GetAwaiter().GetResult();
+                        return true;
                     }
                     catch (NotSupportedExtensionException)
                     { }
+
+                    return false;
                 });
         }
 
-        private void HandleMedia(IEnumerable<IMedia> items, Action<IMedia> action, Func<IMedia, bool> predicate = null)
+        private void HandleMedia(IEnumerable<IMedia> items, Func<IMedia, bool> action, Func<IMedia, bool> predicate = null)
         {
             var isChanged = false;
             foreach (var item in items)
@@ -180,13 +186,16 @@ namespace Tinifier.Core.Application
                 {
                     if (action != null && (predicate == null || predicate(item)))
                     {
-                        action(item);
-                        isChanged = true;
+                        isChanged |= action(item);                        
                     }
                 }
             }
+
+            //Try to limit the amount of times the statistics are gathered
             if (isChanged)
+            {
                 Task.Run(() => _statisticService.UpdateStatistic());
+            }
         }
 
         /// <summary>

@@ -270,9 +270,15 @@ namespace Tinifier.Core.Services.Media
             // update umbraco media attributes
             _imageRepository.Update(id, tinyResponse.Output.Size);
             // update statistic
-            _statisticService.UpdateStatistic();
+            //Try to limit the amount of times the statistics are gathered
+            //_statisticService.UpdateStatistic();
             // update tinifying state
             _stateService.UpdateState();
+        }
+
+        public void UpdateStatistics()
+        {
+            _statisticService.UpdateStatistic();
         }
 
         private TImage GetImage(uMedia uMedia)
