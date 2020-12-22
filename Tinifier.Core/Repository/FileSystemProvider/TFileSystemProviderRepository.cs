@@ -1,8 +1,6 @@
 ﻿using System;
 using NPoco;
 using Tinifier.Core.Models.Db;
-using Umbraco.Core;
-using Umbraco.Core.Persistence;
 using Umbraco.Core.Scoping;
 
 namespace Tinifier.Core.Repository.FileSystemProvider
@@ -23,11 +21,18 @@ namespace Tinifier.Core.Repository.FileSystemProvider
                 Type = type
             };
 
-            using (IScope scope = _scopeProvider.CreateScope())
+            try
             {
-                var database = scope.Database;
-                database.Insert(settings);
-                scope.Complete();
+                using (IScope scope = _scopeProvider.CreateScope())
+                {
+                    var database = scope.Database;
+                    database.Insert(settings);
+                    scope.Complete();
+                }
+            }
+            catch
+            {
+                //Assume table doesn't exist yet
             }
         }
 
@@ -53,12 +58,19 @@ namespace Tinifier.Core.Repository.FileSystemProvider
 
         public void Delete()
         {
-            using (IScope scope = _scopeProvider.CreateScope())
+            try
             {
-                var database = scope.Database;
-                var query = new Sql("DELETE FROM TinifierFileSystemProviderSettings");
-                database.Execute(query);
-                scope.Complete();
+                using (IScope scope = _scopeProvider.CreateScope())
+                {
+                    var database = scope.Database;
+                    var query = new Sql("DELETE FROM TinifierFileSystemProviderSettings");
+                    database.Execute(query);
+                    scope.Complete();
+                }
+            }
+            catch 
+            { 
+                //Assume table doesn't exist yet
             }
         }
     }

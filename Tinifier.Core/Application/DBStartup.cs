@@ -10,6 +10,7 @@ using Umbraco.Core.Services;
 
 namespace Tinifier.Core.Application
 {
+    [ComposeBefore(typeof(tinifierStartup))]
     public class DbComposer : IUserComposer
     {
         public void Compose(Composition composition)

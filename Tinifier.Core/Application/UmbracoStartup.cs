@@ -1,10 +1,10 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Hosting;
 using System.Xml;
+using Newtonsoft.Json.Linq;
 using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Infrastructure.Exceptions;
 using Tinifier.Core.Models.Db;
@@ -44,7 +44,7 @@ namespace Tinifier.Core.Application
         private readonly IImageService _imageService;
         private readonly IHistoryService _historyService;
         private readonly IImageCropperInfoService _imageCropperInfoService;
-        private readonly TSetting settings;
+        private TSetting settings;
 
         public SectionService(IFileSystemProviderRepository fileSystemProviderRepository, ISettingsService settingsService,
             IStatisticService statisticService, IImageService imageService, IHistoryService historyService,
@@ -56,13 +56,14 @@ namespace Tinifier.Core.Application
             _imageService = imageService;
             _historyService = historyService;
             _imageCropperInfoService = imageCropperInfoService;
-
-            settings = _settingsService.GetSettings();
         }
 
         public void Initialize()
         {          
             SetFileSystemProvider();
+
+            settings = _settingsService.GetSettings();
+
             ServerVariablesParser.Parsing += Parsing;
             TreeControllerBase.MenuRendering += MenuRenderingHandler;
 

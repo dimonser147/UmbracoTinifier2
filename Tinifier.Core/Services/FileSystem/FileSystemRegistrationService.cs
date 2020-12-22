@@ -19,25 +19,29 @@ namespace Tinifier.Core.Services.FileSystem
         {
             IFileSystem fileSystem = null;
 
-            if (_fileSystemProviderRepository.GetFileSystem().Type == "PhysicalFileSystem")
+            var fs = _fileSystemProviderRepository.GetFileSystem();
+            if (fs != null)
             {
-                fileSystem = new PhysicalFileSystem("~/media");
-            }
-            else
-            {
-                try
+                if (fs.Type == "PhysicalFileSystem")
                 {
-                    fileSystem = AzureFileSystem.GetInstance(
-                        ConfigurationManager.AppSettings["AzureBlobFileSystem.ContainerName:media"],
-                        ConfigurationManager.AppSettings["AzureBlobFileSystem.RootUrl:media"],
-                        ConfigurationManager.AppSettings["AzureBlobFileSystem.ConnectionString:media"],
-                        ConfigurationManager.AppSettings["AzureBlobFileSystem.MaxDays:media"],
-                        ConfigurationManager.AppSettings["AzureBlobFileSystem.UseDefaultRoute:media"],
-                        ConfigurationManager.AppSettings["AzureBlobFileSystem.UsePrivateContainer:media"]);
+                    fileSystem = new PhysicalFileSystem("~/media");
                 }
-                catch (Exception e)
+                else
                 {
-                    Console.WriteLine(e);
+                    try
+                    {
+                        fileSystem = AzureFileSystem.GetInstance(
+                            ConfigurationManager.AppSettings["AzureBlobFileSystem.ContainerName:media"],
+                            ConfigurationManager.AppSettings["AzureBlobFileSystem.RootUrl:media"],
+                            ConfigurationManager.AppSettings["AzureBlobFileSystem.ConnectionString:media"],
+                            ConfigurationManager.AppSettings["AzureBlobFileSystem.MaxDays:media"],
+                            ConfigurationManager.AppSettings["AzureBlobFileSystem.UseDefaultRoute:media"],
+                            ConfigurationManager.AppSettings["AzureBlobFileSystem.UsePrivateContainer:media"]);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e);
+                    }
                 }
             }
 
