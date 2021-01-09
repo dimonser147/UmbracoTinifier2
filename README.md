@@ -1,4 +1,4 @@
-Umbraco Tinifier 2.0
+# Umbraco Tinifier 2.0
 
 **Notice: This package addresses several issues preventing TinifierNext from running. Since the author/owner of that package are not reachable, this new package was created instead.**
 
