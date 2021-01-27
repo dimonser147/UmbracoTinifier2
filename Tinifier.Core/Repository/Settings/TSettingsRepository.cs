@@ -22,11 +22,19 @@ namespace Tinifier.Core.Repository.Settings
         /// <returns></returns>
         public TSetting GetSettings()
         {
-            using (IScope scope = _scopeProvider.CreateScope())
+            try
             {
-                var database = scope.Database;
-                var query = new Sql("SELECT * FROM TinifierUserSettings ORDER BY Id DESC");
-                return database.FirstOrDefault<TSetting>(query);
+                using (IScope scope = _scopeProvider.CreateScope())
+                {
+                    var database = scope.Database;
+                    var query = new Sql("SELECT * FROM TinifierUserSettings ORDER BY Id DESC");
+                    return database.FirstOrDefault<TSetting>(query);
+                }
+            }
+            catch 
+            {
+                //Assume table hasn't been created yet
+                return null;
             }
         }
 

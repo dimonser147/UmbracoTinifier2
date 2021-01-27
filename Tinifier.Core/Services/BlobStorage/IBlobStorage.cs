@@ -1,4 +1,4 @@
-﻿using Microsoft.WindowsAzure.Storage.Blob;
+﻿using Microsoft.Azure.Storage.Blob;
 using System.Collections.Generic;
 
 namespace Tinifier.Core.Services.BlobStorage

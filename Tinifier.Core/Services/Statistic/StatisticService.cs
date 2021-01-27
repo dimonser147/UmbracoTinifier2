@@ -20,8 +20,8 @@ namespace Tinifier.Core.Services.Statistic
         {
            var newStat = new TImageStatistic
            {
-               TotalNumberOfImages = _imageRepository.AmounthOfItems(),
-               NumberOfOptimizedImages = _imageRepository.AmounthOfOptimizedItems(),
+               TotalNumberOfImages = _imageRepository.AmountOfItems(),
+               NumberOfOptimizedImages = _imageRepository.AmountOfOptimizedItems(),
                TotalSavedBytes = 0
            };
 
@@ -47,8 +47,8 @@ namespace Tinifier.Core.Services.Statistic
         {
             var statistic = _statisticRepository.GetStatistic() ?? CreateInitialStatistic();
 
-            statistic.TotalNumberOfImages = _imageRepository.AmounthOfItems();
-            statistic.NumberOfOptimizedImages = _imageRepository.AmounthOfOptimizedItems();
+            statistic.TotalNumberOfImages = _imageRepository.AmountOfItems();
+            statistic.NumberOfOptimizedImages = _imageRepository.AmountOfOptimizedItems();
             statistic.TotalSavedBytes = _statisticRepository.GetTotalSavedBytes();
 
             _statisticRepository.Update(statistic);
@@ -58,8 +58,8 @@ namespace Tinifier.Core.Services.Statistic
         {
             var statistic = _statisticRepository.GetStatistic() ?? CreateInitialStatistic();
 
-            statistic.TotalNumberOfImages = _imageRepository.AmounthOfItems() - amount;
-            statistic.NumberOfOptimizedImages = _imageRepository.AmounthOfOptimizedItems();
+            statistic.TotalNumberOfImages = _imageRepository.AmountOfItems() - amount;
+            statistic.NumberOfOptimizedImages = _imageRepository.AmountOfOptimizedItems();
             statistic.TotalSavedBytes = _statisticRepository.GetTotalSavedBytes();
 
             _statisticRepository.Update(statistic);

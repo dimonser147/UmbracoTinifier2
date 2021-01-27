@@ -77,6 +77,8 @@ namespace Tinifier.Core.Services.Media
         /// <param name="image">TImage</param>
         void UpdateImageAfterSuccessfullRequest(TinyResponse tinyResponse, TImage image, IFileSystem fs);
 
+        void UpdateStatistics();
+
         TImage GetCropImage(string path);
 
         void UndoTinify(int mediaId);

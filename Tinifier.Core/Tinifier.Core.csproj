@@ -331,6 +331,8 @@
     <Compile Include="Repository\Statistic\TStatisticRepository.cs" />
     <Compile Include="Services\BackendDevs\BackendDevsConnectorService.cs" />
     <Compile Include="Services\BackendDevs\IBackendDevsConnector.cs" />
+    <Compile Include="Services\BlobStorage\AzureBlobStorageService.cs" />
+    <Compile Include="Services\BlobStorage\IBlobStorage.cs" />
     <Compile Include="Services\FileSystem\FileSystemRegistrationService.cs" />
     <Compile Include="Services\FileSystem\IFileSystemRegistrationService.cs" />
     <Compile Include="Services\History\HistoryService.cs" />

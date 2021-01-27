@@ -1,10 +1,10 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Hosting;
 using System.Xml;
+using Newtonsoft.Json.Linq;
 using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Infrastructure.Exceptions;
 using Tinifier.Core.Models.Db;
@@ -44,21 +44,26 @@ namespace Tinifier.Core.Application
         private readonly IImageService _imageService;
         private readonly IHistoryService _historyService;
         private readonly IImageCropperInfoService _imageCropperInfoService;
+        private TSetting settings;
 
         public SectionService(IFileSystemProviderRepository fileSystemProviderRepository, ISettingsService settingsService,
-            IStatisticService statisticService, IImageService imageService, IHistoryService historyService)
+            IStatisticService statisticService, IImageService imageService, IHistoryService historyService,
+            IImageCropperInfoService imageCropperInfoService)
         {
             _fileSystemProviderRepository = fileSystemProviderRepository;
             _settingsService = settingsService;
             _statisticService = statisticService;
             _imageService = imageService;
             _historyService = historyService;
-            // _imageCropperInfoService = imageCropperInfoService;
+            _imageCropperInfoService = imageCropperInfoService;
         }
 
         public void Initialize()
-        {
+        {          
             SetFileSystemProvider();
+
+            settings = _settingsService.GetSettings();
+
             ServerVariablesParser.Parsing += Parsing;
             TreeControllerBase.MenuRendering += MenuRenderingHandler;
 
@@ -68,8 +73,6 @@ namespace Tinifier.Core.Application
 
             MediaService.Deleted += MediaService_Deleted;
             MediaService.EmptiedRecycleBin += MediaService_EmptiedRecycleBin;
-
-            ServerVariablesParser.Parsing += Parsing;
         }
 
         private void MediaService_Deleted(IMediaService sender, DeleteEventArgs<IMedia> e)
@@ -91,7 +94,6 @@ namespace Tinifier.Core.Application
         /// <param name="e">RecycleBinEventArgs</param>
         private void MediaService_EmptiedRecycleBin(IMediaService sender, RecycleBinEventArgs e)
         {
-
             //foreach (var id in e.)
             //{
             //    _historyService.Delete(id.ToString());
@@ -102,8 +104,7 @@ namespace Tinifier.Core.Application
 
         private void ContentService_Saving(IContentService sender, SaveEventArgs<IContent> e)
         {
-            var settingService = _settingsService.GetSettings();
-            if (settingService == null)
+            if (settings == null)
                 return;
 
             foreach (var entity in e.SavedEntities)
@@ -137,7 +138,7 @@ namespace Tinifier.Core.Application
 
                     //Cropped file was created or updated
                     _imageCropperInfoService.GetCropImagesAndTinify(key, imageCropperInfo, imagePath,
-                        settingService.EnableOptimizationOnUpload, path);
+                        settings.EnableOptimizationOnUpload, path);
                 }
             }
         }
@@ -147,7 +148,10 @@ namespace Tinifier.Core.Application
             MediaSavingHelper.IsSavingInProgress = true;
             // reupload image issue https://goo.gl/ad8pTs
             HandleMedia(e.SavedEntities,
-                    (m) => _historyService.Delete(m.Id.ToString()),
+                    (m) => {
+                        _historyService.Delete(m.Id.ToString());
+                        return false;
+                    },
                     (m) => m.IsPropertyDirty(PackageConstants.UmbracoFileAlias));
         }
 
@@ -165,13 +169,16 @@ namespace Tinifier.Core.Application
                     try
                     {
                         OptimizeOnUploadAsync(m.Id, e).GetAwaiter().GetResult();
+                        return true;
                     }
                     catch (NotSupportedExtensionException)
                     { }
+
+                    return false;
                 });
         }
 
-        private void HandleMedia(IEnumerable<IMedia> items, Action<IMedia> action, Func<IMedia, bool> predicate = null)
+        private void HandleMedia(IEnumerable<IMedia> items, Func<IMedia, bool> action, Func<IMedia, bool> predicate = null)
         {
             var isChanged = false;
             foreach (var item in items)
@@ -180,13 +187,16 @@ namespace Tinifier.Core.Application
                 {
                     if (action != null && (predicate == null || predicate(item)))
                     {
-                        action(item);
-                        isChanged = true;
+                        isChanged |= action(item);                        
                     }
                 }
             }
+
+            //Try to limit the amount of times the statistics are gathered
             if (isChanged)
+            {
                 Task.Run(() => _statisticService.UpdateStatistic());
+            }
         }
 
         /// <summary>
@@ -242,7 +252,6 @@ namespace Tinifier.Core.Application
 
         private void SetFileSystemProvider()
         {
-
             var path = HostingEnvironment.MapPath("~/Web.config");
             var doc = new XmlDocument();
             doc.Load(path);

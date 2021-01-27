@@ -77,7 +77,9 @@ namespace Tinifier.Core.Services.Media
 
         public IEnumerable<TImage> Convert(IEnumerable<uModels.Media> items)
         {
-            return items.Select(x => Convert(x));
+            return items
+                .Select(x => Convert(x))
+                .Where(x => !string.IsNullOrEmpty(x.AbsoluteUrl)); //Skip images for which we were unable to fetch the Url
         }
 
         public TImage Convert(uModels.Media uMedia)
@@ -268,9 +270,15 @@ namespace Tinifier.Core.Services.Media
             // update umbraco media attributes
             _imageRepository.Update(id, tinyResponse.Output.Size);
             // update statistic
-            _statisticService.UpdateStatistic();
+            //Try to limit the amount of times the statistics are gathered
+            //_statisticService.UpdateStatistic();
             // update tinifying state
             _stateService.UpdateState();
+        }
+
+        public void UpdateStatistics()
+        {
+            _statisticService.UpdateStatistic();
         }
 
         private TImage GetImage(uMedia uMedia)
